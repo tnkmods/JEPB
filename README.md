@@ -12,7 +12,7 @@ Report it here: [Github](https://github.com/tnkmods/JEPB/issues)
 
 #### Note
 
-This mod requires JEI, Babel and Forge to run. It is compatible with 1.16.4 (should work with 1.16.5 but haven't tested yet).
+This mod requires JEI, [Babel](https://github.com/tnkmods/Babel) and Forge to run. It is compatible with 1.16.4 (should work with 1.16.5 but haven't tested yet).
 
 #### Modpack Makers
 
