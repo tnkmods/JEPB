@@ -28,6 +28,6 @@ Adds JEI support for seeing Piglin Bartering.
 [[dependencies.jepb]]
     modId="babel"
     mandatory=true
-    versionRange="[1.0.1,2.0.0)"
+    versionRange="[1.0.2,2.0.0)"
     ordering="AFTER"
     side="BOTH"
