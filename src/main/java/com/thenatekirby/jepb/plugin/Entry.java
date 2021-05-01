@@ -2,6 +2,7 @@ package com.thenatekirby.jepb.plugin;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.IItemProvider;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
 class Entry {
-    private final ItemStack itemStack;
+    private ItemStack itemStack;
 
     private int min;
 
@@ -60,6 +61,10 @@ class Entry {
     }
 
     void setEnchantments(@Nonnull List<Enchantment> enchantments) {
+        if (this.itemStack.getItem() == Items.BOOK) {
+            this.itemStack = new ItemStack(Items.ENCHANTED_BOOK);
+        }
+
         for (Enchantment enchantment : enchantments) {
             this.itemStack.addEnchantment(enchantment, 1);
         }
