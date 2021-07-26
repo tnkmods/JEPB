@@ -39,7 +39,7 @@ public class PiglinBarteringRecipeBuilder {
     private static LootTableManager manager;
 
     public static List<PiglinBarteringRecipe> getPiglinBarteringRecipes() {
-        LootTable barteringTable = getManager(Minecraft.getInstance().world).getLootTableFromLocation(LootTables.PIGLIN_BARTERING);
+        LootTable barteringTable = getManager(Minecraft.getInstance().level).get(LootTables.PIGLIN_BARTERING);
 
         return getLootTableItems(barteringTable)
                 .stream()
@@ -49,7 +49,7 @@ public class PiglinBarteringRecipeBuilder {
 
     private static LootTableManager getManager(@Nullable World world) {
         if (world != null && world.getServer() != null) {
-            return world.getServer().getLootTableManager();
+            return world.getServer().getLootTables();
         }
 
         if (manager != null) {
@@ -66,18 +66,18 @@ public class PiglinBarteringRecipeBuilder {
 
         SimpleReloadableResourceManager serverResourceManger = new SimpleReloadableResourceManager(ResourcePackType.SERVER_DATA);
         for (IResourcePack pack : packs) {
-            serverResourceManger.addResourcePack(pack);
+            serverResourceManger.add(pack);
         }
 
-        serverResourceManger.addReloadListener(manager);
+        serverResourceManger.registerReloadListener(manager);
 
-        CompletableFuture future = serverResourceManger.reloadResourcesAndThen(
-                Util.getServerExecutor(),
+        CompletableFuture future = serverResourceManger.reload(
+                Util.backgroundExecutor(),
                 Minecraft.getInstance(),
                 packs,
                 CompletableFuture.completedFuture(Unit.INSTANCE));
 
-        Minecraft.getInstance().driveUntil(future::isDone);
+        Minecraft.getInstance().managedBlock(future::isDone);
 
         return manager;
     }

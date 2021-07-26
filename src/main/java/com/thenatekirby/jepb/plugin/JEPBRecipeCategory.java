@@ -95,13 +95,13 @@ public class JEPBRecipeCategory implements IRecipeCategory<PiglinBarteringRecipe
     }
 
     @Override
-    public void setIngredients(@Nonnull PiglinBarteringRecipe recipe, @Nonnull IIngredients ingredients) {
+    public void setIngredients(PiglinBarteringRecipe recipe, IIngredients ingredients) {
         ingredients.setInputs(VanillaTypes.ITEM, ImmutableList.of(new ItemStack(Items.GOLD_INGOT)));
         ingredients.setOutput(VanillaTypes.ITEM, recipe.getResult());
     }
 
     @Override
-    public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull PiglinBarteringRecipe recipe, @Nonnull IIngredients ingredients) {
+    public void setRecipe(IRecipeLayout recipeLayout, PiglinBarteringRecipe recipe, IIngredients ingredients) {
         IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
         int y = (background.getHeight() / 2) - 10;
@@ -122,10 +122,10 @@ public class JEPBRecipeCategory implements IRecipeCategory<PiglinBarteringRecipe
             String extraText = data.getExtraText();
 
             int textColor = 0xFF888888;
-            int width = minecraft.fontRenderer.getStringWidth(extraText);
+            int width = minecraft.font.width(extraText);
             int x = (121 - (width / 2));
             int y = (background.getHeight() / 2) + 12;
-            minecraft.fontRenderer.drawString(matrixStack, extraText, x, y, textColor);
+            minecraft.font.draw(matrixStack, extraText, x, y, textColor);
         }
     }
 

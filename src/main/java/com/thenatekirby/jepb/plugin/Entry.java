@@ -66,7 +66,7 @@ class Entry {
         }
 
         for (Enchantment enchantment : enchantments) {
-            this.itemStack.addEnchantment(enchantment, 1);
+            this.itemStack.enchant(enchantment, 1);
         }
     }
 
