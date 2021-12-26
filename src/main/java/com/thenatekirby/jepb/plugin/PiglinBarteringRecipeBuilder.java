@@ -1,28 +1,33 @@
 package com.thenatekirby.jepb.plugin;
 
 import com.thenatekirby.babel.integration.Mods;
-import com.thenatekirby.babel.loot.LootEntryUtil;
-import com.thenatekirby.babel.loot.LootFunctionUtil;
-import com.thenatekirby.babel.loot.LootTableUtil;
+import com.thenatekirby.babel.util.loot.LootEntryUtil;
+import com.thenatekirby.babel.util.loot.LootFunctionUtil;
+import com.thenatekirby.babel.util.loot.LootRange;
+import com.thenatekirby.babel.util.loot.LootTableUtil;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.loot.*;
-import net.minecraft.loot.functions.EnchantRandomly;
-import net.minecraft.loot.functions.ILootFunction;
-import net.minecraft.loot.functions.SetCount;
-import net.minecraft.loot.functions.SetNBT;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.resources.IResourcePack;
-import net.minecraft.resources.ResourcePackType;
-import net.minecraft.resources.SimpleReloadableResourceManager;
-import net.minecraft.resources.VanillaPack;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.VanillaPackResources;
+import net.minecraft.server.packs.repository.ServerPacksSource;
+import net.minecraft.server.packs.resources.SimpleReloadableResourceManager;
 import net.minecraft.util.Unit;
-import net.minecraft.util.Util;
-import net.minecraft.world.World;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.loot.*;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.functions.EnchantRandomlyFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.functions.SetNbtFunction;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
-import net.minecraftforge.fml.packs.ModFileResourcePack;
+import net.minecraftforge.forgespi.language.IModFileInfo;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -36,10 +41,10 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
 public class PiglinBarteringRecipeBuilder {
-    private static LootTableManager manager;
+    private static LootTables manager;
 
     public static List<PiglinBarteringRecipe> getPiglinBarteringRecipes() {
-        LootTable barteringTable = getManager(Minecraft.getInstance().level).get(LootTables.PIGLIN_BARTERING);
+        LootTable barteringTable = getManager(Minecraft.getInstance().level).get(BuiltInLootTables.PIGLIN_BARTERING);
 
         return getLootTableItems(barteringTable)
                 .stream()
@@ -47,25 +52,28 @@ public class PiglinBarteringRecipeBuilder {
                 .collect(Collectors.toList());
     }
 
-    private static LootTableManager getManager(@Nullable World world) {
-        if (world != null && world.getServer() != null) {
-            return world.getServer().getLootTables();
+    private static LootTables getManager(@Nullable Level level) {
+        if (level != null && level.getServer() != null) {
+            return level.getServer().getLootTables();
         }
 
         if (manager != null) {
             return manager;
         }
 
-        manager = new LootTableManager(new LootPredicateManager());
+        manager = new LootTables(new PredicateManager());
 
-        List<IResourcePack> packs = new LinkedList<>();
-        packs.add(new VanillaPack(Mods.MINECRAFT.getRoot()));
-        for (ModFileInfo mod : ModList.get().getModFiles()) {
-            packs.add(new ModFileResourcePack(mod.getFile()));
+        List<PackResources> packs = new LinkedList<>();
+        packs.add(new VanillaPackResources(ServerPacksSource.BUILT_IN_METADATA, Mods.MINECRAFT.getRoot()));
+
+        // TODO: Modstuffs
+//        ModList.get().getModFiles()
+        for (IModFileInfo mod : ModList.get().getModFiles()) {
+//            packs.add(new ModFileResourcePack(mod.getFile()));
         }
 
-        SimpleReloadableResourceManager serverResourceManger = new SimpleReloadableResourceManager(ResourcePackType.SERVER_DATA);
-        for (IResourcePack pack : packs) {
+        SimpleReloadableResourceManager serverResourceManger = new SimpleReloadableResourceManager(PackType.SERVER_DATA);
+        for (PackResources pack : packs) {
             serverResourceManger.add(pack);
         }
 
@@ -88,27 +96,28 @@ public class PiglinBarteringRecipeBuilder {
 
         List<LootPool> pools = LootTableUtil.getLootTablePools(table);
         pools.forEach(pool -> {
-            List<LootEntry> lootEntries = LootTableUtil.getLootTableEntries(pool);
+            List<LootPoolEntryContainer> lootEntries = Arrays.asList(LootTableUtil.getLootTableEntries(pool));
             lootEntries.stream()
-                    .filter(entry -> entry instanceof ItemLootEntry)
+                    .filter(entry -> entry instanceof LootItem)
                     .forEach(entry -> {
                         Entry lootTableEntry = new Entry(LootEntryUtil.getItem(entry));
-                        ILootFunction[] functions = LootEntryUtil.getFunctions(entry);
+                        LootItemFunction[] functions = LootEntryUtil.getFunctions(entry);
 
                         Arrays.stream(functions).forEach(function -> {
-                            if (function instanceof SetNBT) {
-                                CompoundNBT nbt = LootFunctionUtil.getTag((SetNBT) function);
+                            if (function instanceof SetNbtFunction) {
+                                CompoundTag nbt = LootFunctionUtil.getTag((SetNbtFunction) function);
                                 lootTableEntry.setNBT(nbt);
 
-                            } else if (function instanceof EnchantRandomly) {
-                                List<Enchantment> enchantments = LootFunctionUtil.getEnchantments((EnchantRandomly) function);
+                            } else if (function instanceof EnchantRandomlyFunction) {
+                                List<Enchantment> enchantments = LootFunctionUtil.getEnchantments((EnchantRandomlyFunction) function);
                                 lootTableEntry.setEnchantments(enchantments);
 
-                            } else if (function instanceof SetCount) {
-                                IRandomRange randomRange = LootFunctionUtil.getCountRange((SetCount) function);
+                            } else if (function instanceof SetItemCountFunction) {
+                                NumberProvider randomRange = LootFunctionUtil.getValue((SetItemCountFunction) function);
 
-                                if (randomRange.getType() == IRandomRange.UNIFORM) {
-                                    RandomValueRange range = (RandomValueRange) randomRange;
+                                if (randomRange.getType() == NumberProviders.UNIFORM) {
+                                    UniformGenerator uniformGenerator = (UniformGenerator) randomRange;
+                                    LootRange range = LootRange.from(uniformGenerator);
                                     lootTableEntry.setRange((int)range.getMin(), (int)range.getMax());
                                 }
                             }

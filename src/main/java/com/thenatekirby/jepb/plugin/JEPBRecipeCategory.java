@@ -4,7 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.thenatekirby.jepb.JEPB;
 import com.thenatekirby.jepb.Localization;
 import mezz.jei.api.constants.VanillaTypes;
@@ -15,10 +15,11 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import javax.annotation.Nonnull;
 
@@ -56,7 +57,7 @@ public class JEPBRecipeCategory implements IRecipeCategory<PiglinBarteringRecipe
         return new ItemStack(Items.GOLD_INGOT);
     }
 
-    private TranslationTextComponent getLocalizedName() {
+    private TranslatableComponent getLocalizedName() {
         return Localization.PIGLIN_BARTERING;
     }
 
@@ -78,8 +79,8 @@ public class JEPBRecipeCategory implements IRecipeCategory<PiglinBarteringRecipe
 
     @Override
     @Nonnull
-    public String getTitle() {
-        return getLocalizedName().getString();
+    public Component getTitle() {
+        return getLocalizedName();
     }
 
     @Override
@@ -101,7 +102,7 @@ public class JEPBRecipeCategory implements IRecipeCategory<PiglinBarteringRecipe
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, PiglinBarteringRecipe recipe, IIngredients ingredients) {
+    public void setRecipe(IRecipeLayout recipeLayout, @Nonnull PiglinBarteringRecipe recipe, @Nonnull IIngredients ingredients) {
         IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
         int y = (background.getHeight() / 2) - 10;
@@ -114,7 +115,7 @@ public class JEPBRecipeCategory implements IRecipeCategory<PiglinBarteringRecipe
     }
 
     @Override
-    public void draw(PiglinBarteringRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+    public void draw(@Nonnull PiglinBarteringRecipe recipe, @Nonnull PoseStack matrixStack, double mouseX, double mouseY) {
         Minecraft minecraft = Minecraft.getInstance();
 
         PiglinBarteringRecipeData data = cachedData.getUnchecked(recipe);

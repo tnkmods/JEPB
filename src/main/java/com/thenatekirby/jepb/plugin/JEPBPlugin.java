@@ -4,15 +4,13 @@ import com.thenatekirby.jepb.JEPB;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import javax.annotation.Nonnull;
 
