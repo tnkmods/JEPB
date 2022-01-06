@@ -14,15 +14,13 @@ import net.minecraft.server.packs.VanillaPackResources;
 import net.minecraft.server.packs.repository.ServerPacksSource;
 import net.minecraft.server.packs.resources.SimpleReloadableResourceManager;
 import net.minecraft.util.Unit;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.*;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
-import net.minecraft.world.level.storage.loot.functions.EnchantRandomlyFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
-import net.minecraft.world.level.storage.loot.functions.SetNbtFunction;
+import net.minecraft.world.level.storage.loot.functions.*;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
@@ -79,7 +77,7 @@ public class PiglinBarteringRecipeBuilder {
 
         serverResourceManger.registerReloadListener(manager);
 
-        CompletableFuture future = serverResourceManger.reload(
+        CompletableFuture<Unit> future = serverResourceManger.reload(
                 Util.backgroundExecutor(),
                 Minecraft.getInstance(),
                 packs,
@@ -111,6 +109,10 @@ public class PiglinBarteringRecipeBuilder {
                             } else if (function instanceof EnchantRandomlyFunction) {
                                 List<Enchantment> enchantments = LootFunctionUtil.getEnchantments((EnchantRandomlyFunction) function);
                                 lootTableEntry.setEnchantments(enchantments);
+
+                            } else if (function instanceof SetPotionFunction) {
+                                Potion potion = LootFunctionUtil.getPotion((SetPotionFunction) function);
+                                lootTableEntry.setPotion(potion);
 
                             } else if (function instanceof SetItemCountFunction) {
                                 NumberProvider randomRange = LootFunctionUtil.getValue((SetItemCountFunction) function);

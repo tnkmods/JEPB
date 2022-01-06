@@ -4,6 +4,8 @@ import com.thenatekirby.babel.core.api.IItemProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.ItemLike;
 
@@ -75,6 +77,10 @@ class Entry {
         for (Enchantment enchantment : enchantments) {
             this.itemStack.enchant(enchantment, 1);
         }
+    }
+
+    void setPotion(@Nonnull Potion potion) {
+        PotionUtils.setPotion(itemStack, potion);
     }
 
     // endregion

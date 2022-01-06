@@ -29,9 +29,9 @@ public class JEPBRecipeCategory implements IRecipeCategory<PiglinBarteringRecipe
     static final ResourceLocation UID = JEPB.MOD.withPath("bartering");
 
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
-    private IGuiHelper guiHelper;
-    private IDrawable background;
-    private IDrawable icon;
+    private final IGuiHelper guiHelper;
+    private final IDrawable background;
+    private final IDrawable icon;
 
     private final LoadingCache<PiglinBarteringRecipe, PiglinBarteringRecipeData> cachedData;
 
@@ -42,7 +42,8 @@ public class JEPBRecipeCategory implements IRecipeCategory<PiglinBarteringRecipe
 
         this.cachedData = CacheBuilder.newBuilder()
                 .maximumSize(20)
-                .build(new CacheLoader<PiglinBarteringRecipe, PiglinBarteringRecipeData>() {
+                .build(new CacheLoader<>() {
+                    @Nonnull
                     @Override
                     public PiglinBarteringRecipeData load(@Nonnull PiglinBarteringRecipe key) {
                         return new PiglinBarteringRecipeData();
