@@ -1,13 +1,18 @@
 package com.thenatekirby.jepb.plugin;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.IItemProvider;
+import com.thenatekirby.babel.core.api.IItemProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.ItemLike;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+
+// ====---------------------------------------------------------------------------====
 
 @SuppressWarnings("WeakerAccess")
 class Entry {
@@ -24,6 +29,10 @@ class Entry {
     }
 
     Entry(@Nonnull IItemProvider item) {
+        this(new ItemStack(item));
+    }
+
+    Entry(@Nonnull ItemLike item) {
         this(new ItemStack(item));
     }
 
@@ -56,7 +65,7 @@ class Entry {
         this.range = true;
     }
 
-    void setNBT(@Nonnull CompoundNBT nbt) {
+    void setNBT(@Nonnull CompoundTag nbt) {
         this.itemStack.setTag(nbt);
     }
 
@@ -68,6 +77,10 @@ class Entry {
         for (Enchantment enchantment : enchantments) {
             this.itemStack.enchant(enchantment, 1);
         }
+    }
+
+    void setPotion(@Nonnull Potion potion) {
+        PotionUtils.setPotion(itemStack, potion);
     }
 
     // endregion

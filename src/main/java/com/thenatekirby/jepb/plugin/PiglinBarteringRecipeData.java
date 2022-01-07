@@ -1,5 +1,7 @@
 package com.thenatekirby.jepb.plugin;
 
+// ====---------------------------------------------------------------------------====
+
 class PiglinBarteringRecipeData {
     private String extraText;
 

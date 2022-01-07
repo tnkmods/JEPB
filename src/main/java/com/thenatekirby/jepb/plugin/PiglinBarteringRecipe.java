@@ -1,9 +1,10 @@
 package com.thenatekirby.jepb.plugin;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 // ====---------------------------------------------------------------------------====
 
+@SuppressWarnings("ClassCanBeRecord")
 class PiglinBarteringRecipe {
     private final Entry lootTableEntry;
 
